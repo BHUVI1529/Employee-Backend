@@ -24,7 +24,9 @@ import com.example.employeeAtt.models.Employee;
 import com.example.employeeAtt.models.Role;
 import com.example.employeeAtt.repositories.EmployeeRepository;
 import com.example.employeeAtt.service.EmployeeService;
-@CrossOrigin(origins = "http://localhost:3000")
+
+@CrossOrigin(origins = "https://employeeattendance.vercel.app/")
+//@CrossOrigin(origins = "http://localhost:3000")
 
 @RestController
 @RequestMapping("/api/auth")
@@ -70,7 +72,8 @@ public class EmployeeController {
         return ResponseEntity.ok(employees);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = "https://employeeattendance.vercel.app/")
+    //@CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/update/{employeeId}")
     public ResponseEntity<String> updateEmployee(@PathVariable String employeeId, @RequestBody Employee updatedEmployee) {
         String result = employeeService.updateEmployeeByEmployeeId(employeeId, updatedEmployee);
