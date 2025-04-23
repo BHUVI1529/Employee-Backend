@@ -1,0 +1,32 @@
+package com.example.employeeAtt.repositories;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import com.example.employeeAtt.models.Attendance;
+import com.example.employeeAtt.models.Employee;
+
+public interface AttendanceRepository extends JpaRepository<Attendance,Long>{
+
+    // Fetch attendance entries for an employee for a specific date
+    @Query("SELECT a FROM Attendance a WHERE a.employee.employeeId = :employeeId AND DATE(a.loginTime) = CURRENT_DATE")
+    List<Attendance> findTodayAttendanceByEmployee(@Param("employeeId") String employeeId);
+    
+    @Query("SELECT a FROM Attendance a WHERE DATE(a.loginTime) = :date")
+    List<Attendance> findByLoginDate(@Param("date") LocalDate date);
+
+    // Find all employees who logged in on a specific date
+    @Query("SELECT DISTINCT a.employee.employeeId FROM Attendance a WHERE FUNCTION('DATE', a.loginTime) = :date AND a.attendanceType = 'Login'")
+    List<String> findPresentEmployeeIdsByDate(@Param("date") LocalDate date);
+
+    @Query("SELECT e FROM Employee e WHERE e.employeeId NOT IN ("
+     + "SELECT a.employee.employeeId FROM Attendance a "
+     + "WHERE FUNCTION('DATE', a.loginTime) = :date AND a.attendanceType = 'Login')")
+    List<Employee> findAbsenteesByDate(@Param("date") LocalDate date);
+
+    
+}
