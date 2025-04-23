@@ -86,7 +86,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                    .allowedOrigins("https://employeeattendance.vercel.app/") // allow your frontend
+                    .allowedOrigins("https://employeeattendance.vercel.app") // allow your frontend
                     //.allowedOrigins("http://localhost:3000") // allow your frontend
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                     .allowedHeaders("*")

@@ -25,7 +25,7 @@ import com.example.employeeAtt.models.Role;
 import com.example.employeeAtt.repositories.EmployeeRepository;
 import com.example.employeeAtt.service.EmployeeService;
 
-@CrossOrigin(origins = "https://employeeattendance.vercel.app/")
+@CrossOrigin(origins = "https://employeeattendance.vercel.app")
 //@CrossOrigin(origins = "http://localhost:3000")
 
 @RestController
@@ -72,7 +72,7 @@ public class EmployeeController {
         return ResponseEntity.ok(employees);
     }
 
-    @CrossOrigin(origins = "https://employeeattendance.vercel.app/")
+    @CrossOrigin(origins = "https://employeeattendance.vercel.app")
     //@CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/update/{employeeId}")
     public ResponseEntity<String> updateEmployee(@PathVariable String employeeId, @RequestBody Employee updatedEmployee) {
