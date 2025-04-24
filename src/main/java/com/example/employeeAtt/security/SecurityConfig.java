@@ -40,8 +40,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors()
-                .and()  // 👈 Enable CORS here
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // .cors()
+                // .and()  // 👈 Enable CORS here
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/register", "/api/auth/login" ,"/api/auth/employees","/api/auth/employees/count","/api/auth/forgot-password","/api/auth/reset-password").permitAll()
@@ -83,19 +84,33 @@ public class SecurityConfig {
     }*/
 
 
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                    .allowedOrigins("https://employeeattendance.vercel.app")
-                    //.allowedOrigins("http://localhost:3000")
-                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                    .allowedHeaders("*")
-                    .allowCredentials(true);
-            }
-        };
+    // @Bean
+    // public WebMvcConfigurer corsConfigurer() {
+    //     return new WebMvcConfigurer() {
+    //         @Override
+    //         public void addCorsMappings(CorsRegistry registry) {
+    //             registry.addMapping("/**")
+    //                 .allowedOrigins("https://employeeattendance.vercel.app")
+    //                 //.allowedOrigins("http://localhost:3000")
+    //                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+    //                 .allowedHeaders("*")
+    //                 .allowCredentials(true);
+    //         }
+    //     };
+    // }
+
+        @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("https://employeeattendance.vercel.app"));
+        //configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
