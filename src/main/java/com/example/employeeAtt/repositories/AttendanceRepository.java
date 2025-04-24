@@ -1,6 +1,7 @@
 package com.example.employeeAtt.repositories;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,10 +24,19 @@ public interface AttendanceRepository extends JpaRepository<Attendance,Long>{
     @Query("SELECT DISTINCT a.employee.employeeId FROM Attendance a WHERE FUNCTION('DATE', a.loginTime) = :date AND a.attendanceType = 'Login'")
     List<String> findPresentEmployeeIdsByDate(@Param("date") LocalDate date);
 
+
     @Query("SELECT e FROM Employee e WHERE e.employeeId NOT IN ("
      + "SELECT a.employee.employeeId FROM Attendance a "
      + "WHERE FUNCTION('DATE', a.loginTime) = :date AND a.attendanceType = 'Login')")
     List<Employee> findAbsenteesByDate(@Param("date") LocalDate date);
 
-    
+    @Query("SELECT a FROM Attendance a WHERE a.employee.employeeId = :employeeId AND a.loginTime BETWEEN :startOfDay AND :endOfDay")
+    List<Attendance> findByUserIdAndDate(
+        @Param("employeeId") String employeeId,
+        @Param("startOfDay") LocalDateTime startOfDay,
+        @Param("endOfDay") LocalDateTime endOfDay
+    );
+
+    @Query("SELECT a FROM Attendance a WHERE FUNCTION('MONTH', a.loginTime) = :month AND FUNCTION('YEAR', a.loginTime) = :year")
+        List<Attendance> findByMonthAndYear(String month, String year);
 }

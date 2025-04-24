@@ -1,6 +1,10 @@
 package com.example.employeeAtt.service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,6 +83,7 @@ public class AttendanceService {
     public List<Attendance> getAllAttendance() {
         return attendanceRepository.findAll();
     }
+
     public List<Attendance> findAttendanceByDate(LocalDate date) {
         return attendanceRepository.findByLoginDate(date);
     }
@@ -86,43 +91,68 @@ public class AttendanceService {
     public List<Employee> getAbsenteesForDate(LocalDate date) {
         // Fetch all employees
         List<Employee> allEmployees = employeeRepository.findAll();
-
+    
         // Get the list of employees who have attended on the given date
         List<Attendance> attendanceRecords = attendanceRepository.findByLoginDate(date);
-
+    
         // Get the list of employee IDs who attended
         List<String> attendedEmployeeIds = attendanceRecords.stream()
                 .map(a -> a.getEmployee().getEmployeeId())
                 .collect(Collectors.toList());
-
+    
         // Filter employees who are not in the attendance list
         List<Employee> absentees = allEmployees.stream()
                 .filter(emp -> !attendedEmployeeIds.contains(emp.getEmployeeId()))
                 .collect(Collectors.toList());
         return absentees;
     }
-
-        
-    // public List<Employee> getTodayAbsentees() {
-    //     LocalDate today = LocalDate.now();
-    //     List<String> presentEmployeeIds = attendanceRepository.findPresentEmployeeIdsByDate(today);
-    //     return employeeRepository.findByEmployeeIdNotIn(presentEmployeeIds);
-    // }
-
-   
-    // public List<Employee> getAbsenteesByDate(LocalDate date) {
-    //     List<String> presentEmployeeIds = attendanceRepository.findPresentEmployeeIdsByDate(date);
-    //     return employeeRepository.findByEmployeeIdNotIn(presentEmployeeIds);
-    // }
-
+    
      // Get absentees for a specific date
-    public List<Employee> getAbsenteesByDate(LocalDate date) {
+     public List<Employee> getAbsenteesByDate(LocalDate date) {
         return attendanceRepository.findAbsenteesByDate(date);
-    }
+    }    
     
     // Get absentees for current date
     public List<Employee> getTodayAbsentees() {
         return getAbsenteesByDate(LocalDate.now());
     }
+
+    public String calculateDuration(String employeeId, LocalDate date) {
+    // Start of the day (00:00)
+    LocalDateTime startOfDay = date.atStartOfDay();  // Converts LocalDate to LocalDateTime at 00:00
+    
+    // End of the day (23:59:59.999999999)
+    LocalDateTime endOfDay = date.atTime(LocalTime.MAX);  // Converts LocalDate to LocalDateTime at 23:59:59.999999999
+
+    // Call the updated query
+    List<Attendance> records = attendanceRepository.findByUserIdAndDate(employeeId, startOfDay, endOfDay);
+
+    if (records.isEmpty()) {
+        return "No records found for the user on the selected date.";
+    }
+
+    Duration totalDuration = Duration.ZERO;
+    Instant lastLogin = null;
+
+    for (Attendance record : records) {
+        if ("login".equalsIgnoreCase(record.getAttendanceType())) {
+            lastLogin = record.getLoginTime().toInstant();
+        } else if ("logout".equalsIgnoreCase(record.getAttendanceType()) && lastLogin != null) {
+            Instant logout = record.getLoginTime().toInstant();
+            totalDuration = totalDuration.plus(Duration.between(lastLogin, logout));
+            lastLogin = null; // Reset after calculating
+        }
+        }
+        long hours = totalDuration.toHours();
+        long minutes = totalDuration.toMinutes() % 60;
+        long seconds = totalDuration.getSeconds() % 60;
+
+        return String.format("%02d hours, %02d minutes, %02d seconds", hours, minutes, seconds);
+    }
+    public List<Attendance> getAttendanceByMonth(String month, String year) {
+        return attendanceRepository.findByMonthAndYear(month, year);
+    }
+
+
 
 }

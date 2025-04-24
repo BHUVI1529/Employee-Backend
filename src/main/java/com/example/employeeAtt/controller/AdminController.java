@@ -39,37 +39,38 @@ public ResponseEntity<List<Employee>> getAbsentees(@RequestBody Map<String, Stri
     return ResponseEntity.ok(absentees);
 }
     // Endpoint to mark absentee data (if required for any reason, although this can be inferred from attendance absence)
-    @PostMapping("/mark-absent")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> markAbsent(@RequestBody Map<String, String> request) {
-        String employeeId = request.get("employeeId");
-        LocalDate date = LocalDate.parse(request.get("date"));
+    // @PostMapping("/mark-absent")
+    // @PreAuthorize("hasRole('ADMIN')")
+    // public ResponseEntity<String> markAbsent(@RequestBody Map<String, String> request) {
+    //     String employeeId = request.get("employeeId");
+    //     LocalDate date = LocalDate.parse(request.get("date"));
         
-        // Check if the employee has attendance on the given date
-        List<Attendance> attendance = attendanceService.findAttendanceByDate(date);
+    //     // Check if the employee has attendance on the given date
+    //     List<Attendance> attendance = attendanceService.findAttendanceByDate(date);
 
-        // Check if the employee has any attendance for the date
-        boolean isAbsent = attendance.stream()
-            .noneMatch(a -> a.getEmployee().getEmployeeId().equals(employeeId));
+    //     // Check if the employee has any attendance for the date
+    //     boolean isAbsent = attendance.stream()
+    //         .noneMatch(a -> a.getEmployee().getEmployeeId().equals(employeeId));
 
-        if (isAbsent) {
-            // Logic for handling absentee marking (optional, maybe notify or store separately)
-            return ResponseEntity.ok("Employee " + employeeId + " is marked as absent on " + date);
-        } else {
-            return ResponseEntity.badRequest().body("Employee has already marked attendance on this date.");
-        }
-    }
-    // Endpoint to get absentee data by date
+    //     if (isAbsent) {
+    //         // Logic for handling absentee marking (optional, maybe notify or store separately)
+    //         return ResponseEntity.ok("Employee " + employeeId + " is marked as absent on " + date);
+    //     } else {
+    //         return ResponseEntity.badRequest().body("Employee has already marked attendance on this date.");
+    //     }
+    // }
     
-    // Current day absentees
-    @GetMapping("/absentees/today")
-    public List<Employee> getTodayAbsentees() {
-        return attendanceService.getTodayAbsentees();
+    
+     // Endpoint to get absentee data by date
+     @GetMapping("/absentees")
+     public List<Employee> getAbsenteesByDate(@RequestParam("date") 
+         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+         return attendanceService.getAbsenteesByDate(date);
+     }
+     
+     @GetMapping("/absentees/today")
+     public List<Employee> getTodayAbsentees() {
+         return attendanceService.getTodayAbsentees();
     }
 
-    // Specific date absentees
-    @GetMapping("/absentees")
-    public List<Employee> getAbsenteesByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return attendanceService.getAbsenteesByDate(date);
-    }
 }

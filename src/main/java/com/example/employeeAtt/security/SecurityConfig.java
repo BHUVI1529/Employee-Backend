@@ -51,12 +51,13 @@ public class SecurityConfig {
                         
                         //.requestMatchers(HttpMethod.GET, "/api/auth/employees/count").hasRole("ADMIN")
 
-                        .requestMatchers(HttpMethod.GET,"/api/attendance/getAll","/api/attendance/by-date","/api/admin/absentees/today","api/admin/absentees").hasAnyRole("ADMIN")
-
+                        .requestMatchers(HttpMethod.GET,"/api/attendance/getAll","/api/attendance/by-date","/api/attendance/duration","/api/attendance/by-month","/api/admin/absentees/today","api/admin/absentees").hasAnyRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/admin/absentees","/attendance/absentees" ).permitAll()
                         .requestMatchers(HttpMethod.PUT,"/api/auth/update/{employeeId}").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/attendance/count","/api/attendance/present-today").permitAll()
                         .requestMatchers(HttpMethod.DELETE,"/api/auth/delete/{employeeId}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/attendance/mark").hasAnyRole("TEACHING", "NON_TEACHING")
+                        .requestMatchers("/api/attendance/getAll").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

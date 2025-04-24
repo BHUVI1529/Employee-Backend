@@ -43,12 +43,13 @@ public class AttendanceController {
 
     // Get today's attendance for all employees
 
-
+    
     @GetMapping("/getAll")
     public ResponseEntity<List<Attendance>> getAllAttendance() {
         List<Attendance> attendanceList = attendanceService.getAllAttendance();
         return ResponseEntity.ok(attendanceList);
     }
+
     // Get attendance by specific date
     @GetMapping("/by-date")
     @PreAuthorize("hasRole('ADMIN')") // or remove if you want open access
@@ -58,5 +59,21 @@ public class AttendanceController {
         System.out.println("Requested Date: " + date);
         List<Attendance> records = attendanceService.findAttendanceByDate(date);
         return ResponseEntity.ok(records);
+    }
+
+    @GetMapping("/duration")
+    public ResponseEntity<String> getUserDuration(
+        @RequestParam String employeeId,
+        @RequestParam String date
+    )
+    {
+        LocalDate localDate = LocalDate.parse(date);  // Ensure correct format "yyyy-MM-dd"
+        String duration = attendanceService.calculateDuration(employeeId, localDate);
+        return ResponseEntity.ok(duration);
+    }
+
+    @GetMapping("/by-month")
+        public List<Attendance> getAttendanceByMonth(@RequestParam String month, @RequestParam String year) {
+            return attendanceService.getAttendanceByMonth(month, year);
     }
 }
