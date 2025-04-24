@@ -80,20 +80,34 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }*/
-   @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                    .allowedOrigins("https://employeeattendance.vercel.app") // allow your frontend
-                    //.allowedOrigins("http://localhost:3000") // allow your frontend
-                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                    .allowedHeaders("*")
-                    .allowCredentials(true);
-            }
-        };
-    }
+//    @Bean
+//     public WebMvcConfigurer corsConfigurer() {
+//         return new WebMvcConfigurer() {
+//             @Override
+//             public void addCorsMappings(CorsRegistry registry) {
+//                 registry.addMapping("/**")
+//                     .allowedOrigins("https://employeeattendance.vercel.app") // allow your frontend
+//                     //.allowedOrigins("http://localhost:3000") // allow your frontend
+//                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+//                     .allowedHeaders("*")
+//                     .allowCredentials(true);
+//             }
+//         };
+//     }
+
+    @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedOrigins(Arrays.asList("https://employeeattendance.vercel.app")); // ✅ frontend domain
+            //config.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // ✅ frontend domain
+            config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            config.setAllowedHeaders(Arrays.asList("*"));
+            config.setAllowCredentials(true); // Important for JWT in cookies if needed
+        
+            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            source.registerCorsConfiguration("/**", config);
+            return source;
+        }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
