@@ -40,7 +40,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // 👈 Enable CORS here
+                .cors()
+                .and()  // 👈 Enable CORS here
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/register", "/api/auth/login" ,"/api/auth/employees","/api/auth/employees/count","/api/auth/forgot-password","/api/auth/reset-password").permitAll()
@@ -83,18 +84,19 @@ public class SecurityConfig {
 
 
     @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
-            CorsConfiguration config = new CorsConfiguration();
-            config.setAllowedOrigins(Arrays.asList("https://employeeattendance.vercel.app")); // ✅ frontend domain
-            //config.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // ✅ frontend domain
-            config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-            config.setAllowedHeaders(Arrays.asList("*"));
-            config.setAllowCredentials(true); // Important for JWT in cookies if needed
-        
-            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-            source.registerCorsConfiguration("/**", config);
-            return source;
-        }
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                    .allowedOrigins("https://employeeattendance.vercel.app")
+                    //.allowedOrigins("http://localhost:3000")
+                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                    .allowedHeaders("*")
+                    .allowCredentials(true);
+            }
+        };
+    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
