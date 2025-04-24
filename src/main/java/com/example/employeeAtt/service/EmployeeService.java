@@ -143,7 +143,7 @@ public class EmployeeService {
 
     private void sendResetEmail(String email, String resetToken) {
         //String resetLink = "http://localhost:8080/reset-password?token=" + resetToken;
-        String resetLink = "https://employee-attendance-nkz6.onrender.com/reset-password?token=" + resetToken;
+        String resetLink = "https://employeeattendance.vercel.app/reset-password?token=" + resetToken;
         //String resetUrl = "http://your-public-ip:8080/reset-password?token=" + resetToken;
 
         System.out.println("🔹 Preparing to send reset password email to: " + email);
