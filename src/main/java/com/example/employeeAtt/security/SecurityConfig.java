@@ -1,5 +1,6 @@
 package com.example.employeeAtt.security;
 
+import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,8 +40,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors() // 👈 Enable CORS here
-                .and()
+                .cors(withDefaults()) // 👈 Enable CORS here
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/register", "/api/auth/login" ,"/api/auth/employees","/api/auth/employees/count","/api/auth/forgot-password","/api/auth/reset-password").permitAll()
@@ -80,20 +80,7 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }*/
-//    @Bean
-//     public WebMvcConfigurer corsConfigurer() {
-//         return new WebMvcConfigurer() {
-//             @Override
-//             public void addCorsMappings(CorsRegistry registry) {
-//                 registry.addMapping("/**")
-//                     .allowedOrigins("https://employeeattendance.vercel.app") // allow your frontend
-//                     //.allowedOrigins("http://localhost:3000") // allow your frontend
-//                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-//                     .allowedHeaders("*")
-//                     .allowCredentials(true);
-//             }
-//         };
-//     }
+
 
     @Bean
         public CorsConfigurationSource corsConfigurationSource() {
