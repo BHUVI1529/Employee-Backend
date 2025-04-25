@@ -201,6 +201,17 @@ public class AttendanceService {
         return finalReport;
     }
 
+    public long getTodayAttendanceCount() {
+        LocalDate today = LocalDate.now();
+        return attendanceRepository.countByDate(today);
+    }
+    
+    public long getAbsentCountForToday() {
+        LocalDate today = LocalDate.now();
+        long totalUsers = attendanceRepository.count(); // Assuming you have UserRepository
+        long presentToday = attendanceRepository.countByDate(today);
+        return totalUsers - presentToday;
+    }
 
 
 }

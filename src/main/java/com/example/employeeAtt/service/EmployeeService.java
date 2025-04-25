@@ -168,6 +168,11 @@ public class EmployeeService {
 
         return "Password has been reset successfully.";
     }
+
+    public Employee getEmployeeById(String employeeId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getEmployeeById'");
+    }
     
 
 }

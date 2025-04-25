@@ -52,4 +52,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance,Long>{
         ORDER BY DATE(a.attendance_time)
     """, nativeQuery = true)
     List<Object[]> getWeeklyPresentCounts(@Param("startDate") Date startDate);
+
+    @Query("SELECT COUNT(a) FROM Attendance a WHERE a.date = :today")
+    long countByDate(@Param("today") LocalDate today);
 }

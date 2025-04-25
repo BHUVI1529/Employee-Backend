@@ -2,6 +2,7 @@ package com.example.employeeAtt.controller;
 
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -78,4 +79,15 @@ public ResponseEntity<List<Employee>> getAbsentees(@RequestBody Map<String, Stri
         List<Map<String, Object>> weeklyAttendance = attendanceService.getWeeklyAttendance();
         return ResponseEntity.ok(weeklyAttendance);
     }
+    @GetMapping("/absent-today")
+public ResponseEntity<Long> getAbsentCountForToday() {
+    long absentCount = attendanceService.getAbsentCountForToday();
+    return ResponseEntity.ok(absentCount);
+}
+@GetMapping("/count/today")
+public ResponseEntity<?> getTodayAttendanceCount() {
+    long count = attendanceService.getTodayAttendanceCount();
+    return ResponseEntity.ok(Collections.singletonMap("total", count));
+}
+
 }
