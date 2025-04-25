@@ -73,4 +73,9 @@ public ResponseEntity<List<Employee>> getAbsentees(@RequestBody Map<String, Stri
          return attendanceService.getTodayAbsentees();
     }
 
+    @GetMapping("/weekly-report")
+    public ResponseEntity<List<Map<String, Object>>> getWeeklyReport() {
+        List<Map<String, Object>> weeklyAttendance = attendanceService.getWeeklyAttendance();
+        return ResponseEntity.ok(weeklyAttendance);
+    }
 }

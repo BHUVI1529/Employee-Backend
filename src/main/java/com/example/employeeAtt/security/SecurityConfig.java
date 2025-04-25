@@ -58,6 +58,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE,"/api/auth/delete/{employeeId}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/attendance/mark").hasAnyRole("TEACHING", "NON_TEACHING")
                         .requestMatchers("/api/attendance/getAll").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/admin/weekly-report").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -73,19 +74,7 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
-
-    /*@Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }*/
-
-
+    
     // @Bean
     // public WebMvcConfigurer corsConfigurer() {
     //     return new WebMvcConfigurer() {

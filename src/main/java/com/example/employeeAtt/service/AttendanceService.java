@@ -1,12 +1,16 @@
 package com.example.employeeAtt.service;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,6 +155,50 @@ public class AttendanceService {
     }
     public List<Attendance> getAttendanceByMonth(String month, String year) {
         return attendanceRepository.findByMonthAndYear(month, year);
+    }
+
+    public List<Map<String, Object>> getWeeklyAttendance() {
+        LocalDate today = LocalDate.now();
+
+        // Get Monday of the current week
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = startOfWeek.plusDays(5); // Monday to Saturday
+
+        List<Object[]> rawData = attendanceRepository.getWeeklyPresentCounts(java.sql.Date.valueOf(startOfWeek));
+
+        Map<LocalDate, Long> presentMap = new HashMap<>();
+        for (Object[] row : rawData) {
+            java.sql.Date sqlDate = (java.sql.Date) row[0];
+            LocalDate localDate = sqlDate.toLocalDate();
+            long present = ((Number) row[1]).longValue();
+            presentMap.put(localDate, present);
+        }
+
+        long totalEmployees = employeeRepository.count();
+
+        List<Map<String, Object>> finalReport = new ArrayList<>();
+
+        // Loop from Monday to Saturday
+        for (LocalDate date = startOfWeek; !date.isAfter(endOfWeek); date = date.plusDays(1)) {
+            long present, absent;
+
+            if (date.isAfter(today)) {
+                present = 0;
+                absent = 0;
+            } else {
+                present = presentMap.getOrDefault(date, 0L);
+                absent = totalEmployees - present;
+            }
+
+            Map<String, Object> record = new HashMap<>();
+            record.put("date", date.toString());
+            record.put("present", present);
+            record.put("absent", absent);
+
+            finalReport.add(record);
+        }
+
+        return finalReport;
     }
 
 

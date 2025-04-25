@@ -2,6 +2,7 @@ package com.example.employeeAtt.repositories;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,4 +40,16 @@ public interface AttendanceRepository extends JpaRepository<Attendance,Long>{
 
     @Query("SELECT a FROM Attendance a WHERE FUNCTION('MONTH', a.loginTime) = :month AND FUNCTION('YEAR', a.loginTime) = :year")
         List<Attendance> findByMonthAndYear(String month, String year);
+
+        @Query(value = """
+        SELECT 
+            DATE(a.attendance_time) AS date,
+            COUNT(DISTINCT CASE WHEN a.attendance_type = 'Login' THEN a.employee_id END) AS present
+        FROM attendance a
+        WHERE a.attendance_type = 'Login'
+          AND a.attendance_time >= :startDate
+        GROUP BY DATE(a.attendance_time)
+        ORDER BY DATE(a.attendance_time)
+    """, nativeQuery = true)
+    List<Object[]> getWeeklyPresentCounts(@Param("startDate") Date startDate);
 }
